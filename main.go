@@ -18,6 +18,7 @@ import (
 )
 
 const (
+	mqttdefaultserver = "tcp://localhost:1883"
 	mqttclientidprefix = "appbridge"
 )
 
@@ -37,7 +38,7 @@ func genclientid() string {
 
 /* Setup argument flags and help prompt */
 func init() {
-	flag.StringVar(&mqttserver, "mqtt_server", "localhost", "Sets the MQTT server")
+	flag.StringVar(&mqttserver, "mqtt_server", mqttdefaultserver, "Sets the MQTT server")
 	flag.StringVar(&mqttuser, "mqtt_user", "", "Sets the MQTT username")
 	flag.StringVar(&mqttpass, "mqtt_pass", "", "Sets the MQTT password")
 	flag.Usage = func() {
