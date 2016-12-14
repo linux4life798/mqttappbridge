@@ -22,11 +22,12 @@ const (
 	mqttclientidprefix = "appbridge"
 )
 
+/* Options to be filled in by arguments */
 var mqttserver string
 var mqttuser string
 var mqttpass string
 
-// generate a random client id for mqtt
+/* Generate a random client id for mqtt */
 func genclientid() string {
 	r, err := rand.Int(rand.Reader, new(big.Int).SetInt64(100000))
 	if err != nil {
