@@ -34,6 +34,8 @@ func genclientid() string {
 	return mqttclientidprefix + r.String()
 }
 
+
+/* Setup argument flags and help prompt */
 func init() {
 	flag.StringVar(&mqttserver, "mqtt_server", "localhost", "Sets the MQTT server")
 	flag.StringVar(&mqttuser, "mqtt_user", "", "Sets the MQTT username")
@@ -45,7 +47,6 @@ func init() {
 	}
 }
 
-// test it
 func main() {
 	// parse arguments
 	flag.Parse()
@@ -91,6 +92,5 @@ func main() {
 	signals := make(chan os.Signal)
 	signal.Notify(signals, os.Interrupt)
 	<-signals
-
 	log.Println("Shutting down")
 }
