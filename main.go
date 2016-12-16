@@ -14,12 +14,21 @@ import (
 
 	"flag"
 
+	"strings"
+
+	"encoding/json"
+
 	MQTT "github.com/eclipse/paho.mqtt.golang"
+	"github.com/tidwall/gjson"
 )
 
 const (
-	mqttdefaultserver = "tcp://localhost:1883"
+	mqttdefaultserver  = "tcp://localhost:1883"
 	mqttclientidprefix = "appbridge"
+)
+
+const (
+	jsonpathseparator = ",,"
 )
 
 /* Options to be filled in by arguments */
@@ -35,7 +44,6 @@ func genclientid() string {
 	}
 	return mqttclientidprefix + r.String()
 }
-
 
 /* Setup argument flags and help prompt */
 func init() {
@@ -75,18 +83,39 @@ func main() {
 
 	/* Register a handler for each source topic */
 	for i := 0; i < len(topics)-1; i += 2 {
+		var parts []string
+		var src, dst string
 		// make sure each source has a destinations
 		if i+1 >= len(topics) {
 			log.Fatal("Unmatched source topic " + topics[i])
 		}
-		src := topics[i]
-		dst := topics[i+1]
-		log.Println("Map: " + src + " --> " + dst)
 
-		// the most simple way of registering handlers
-		c.Subscribe(src, 2, func(client MQTT.Client, message MQTT.Message) {
-			client.Publish(dst, message.Qos(), message.Retained(), message.Payload())
-		})
+		parts = strings.Split(topics[i], jsonpathseparator)
+		src = parts[0]
+		dst = topics[i+1]
+		if len(parts) > 1 {
+			jpaths := parts[1:]
+			log.Println("Map: " + src + " --> " + dst + " | JSON Path: " + fmt.Sprint(jpaths))
+
+			// the most simple way of registering handlers
+			c.Subscribe(src, 2, func(client MQTT.Client, message MQTT.Message) {
+				results := gjson.GetMany(string(message.Payload()), jpaths...)
+				// we want output message to be JSON with proper type representation
+				values := make([]interface{}, len(results))
+				for i, v := range results {
+					values[i] = v.Value()
+				}
+				out, _ := json.Marshal(&values)
+				client.Publish(dst, message.Qos(), message.Retained(), out)
+			})
+		} else {
+			log.Println("Map: " + src + " --> " + dst)
+
+			// the most simple way of registering handlers
+			c.Subscribe(src, 2, func(client MQTT.Client, message MQTT.Message) {
+				client.Publish(dst, message.Qos(), message.Retained(), message.Payload())
+			})
+		}
 
 	}
 
