@@ -6,8 +6,11 @@ topic's message using path expressions, assuming the message is JSON.
 This is done at the mqtt application/client level. It subscribes to all
 source topics and publishes any messages it receives to it's associated
 destination topic. If a path expression is given, it will select the
-relevant part of the message using [gjson][gjson]'s GetMany method. The output
-message will be a JSON array containing the selected parts.
+relevant part of the message using [gjson][gjson]'s GetMany method. The
+output message will be a JSON array containing the selected parts, unless
+the "simple_single" flag is specified. If this flag is used, single
+JSON Paths will present just the bare value, instead of JSON array
+wrapped single value.
 
 To specify a JSON path expression for a source, you append the [gjson][gjson]
 path expression to the end of a source topic with two commas, ",,",
@@ -26,6 +29,9 @@ mqttappbridge -mqtt_user me -mqtt_pass somepassword -mqtt_server tls://mqtt.exam
 ```
 ```
 mqttappbridge -mqtt_user me -mqtt_pass somepassword -mqtt_server tls://mqtt.example.com:1883 simulation/src1 simulation/dst1 simulation/src2,,name.first,,name.last simulation/dst2 simulation/src3,,1.id simulation/dst3
+```
+```
+mqttappbridge -mqtt_user me -mqtt_pass somepassword -mqtt_server tls://mqtt.example.com:1883 -simple_single simulation/+/rx simulation/allrx simulation/+/rx,,data simulation/allrxdata
 ```
 
 # Dependencies

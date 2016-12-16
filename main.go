@@ -35,6 +35,7 @@ const (
 var mqttserver string
 var mqttuser string
 var mqttpass string
+var simplesingle bool
 
 /* Generate a random client id for mqtt */
 func genclientid() string {
@@ -50,6 +51,7 @@ func init() {
 	flag.StringVar(&mqttserver, "mqtt_server", mqttdefaultserver, "Sets the MQTT server")
 	flag.StringVar(&mqttuser, "mqtt_user", "", "Sets the MQTT username")
 	flag.StringVar(&mqttpass, "mqtt_pass", "", "Sets the MQTT password")
+	flag.BoolVar(&simplesingle, "simple_single", false, "Removes JSON array brackets from single values")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Usage: %s [options] <source_topic1> <destination_topic1> [<source_topic2> <destination_topic2> [...]]\n", os.Args[0])
 		fmt.Fprintf(os.Stderr, "\noption:\n")
@@ -105,8 +107,15 @@ func main() {
 				for i, v := range results {
 					values[i] = v.Value()
 				}
-				out, _ := json.Marshal(&values)
-				client.Publish(dst, message.Qos(), message.Retained(), out)
+
+				var output []byte
+				if simplesingle && len(values) == 1 {
+					output = []byte(fmt.Sprint(values[0]))
+				} else {
+					output, _ = json.Marshal(&values)
+				}
+
+				client.Publish(dst, message.Qos(), message.Retained(), output)
 			})
 		} else {
 			log.Println("Map: " + src + " --> " + dst)
