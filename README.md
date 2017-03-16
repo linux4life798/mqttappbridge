@@ -5,17 +5,17 @@ of destination topics. Additionally, you can select parts of the source
 topic's message using path expressions, assuming the message is JSON.
 This is done at the mqtt application/client level. It subscribes to all
 source topics and publishes any messages it receives to it's associated
-destination topic. If a path expression is given, it will select the
+destination topic. If a [path expression][gjson_path] is given, it will select the
 relevant part of the message using [gjson][gjson]'s GetMany method. The
 output message will be a JSON array containing the selected parts, unless
 the "simple_single" flag is specified. If this flag is used, single
 JSON Paths will present just the bare value, instead of JSON array
 wrapped single value.
 
-To specify a JSON path expression for a source, you append the [gjson][gjson]
-path expression to the end of a source topic with two commas, ",,",
-separating them. Multiple selections can be made by simply appending
-them with the ",," separator between them.
+To specify a JSON path expression for a source, you append the
+[gjson path expression][gjson_path] to the end of a source topic with
+two commas, ",,", separating them. Multiple selections can be made
+by simply appending them with the ",," separator between them.
 
 I understand the ",," is ugly, but it is pretty clear that ",," doesn't
 appear in english names or sentence, isn't used as a wildcard, nor doesn
@@ -54,3 +54,4 @@ mqttappbridge -mqtt_user me -mqtt_pass somepassword -mqtt_server tls://mqtt.exam
 go get -u [github.com/tidwall/gjson][gjson]
 
 [gjson]: http://github.com/tidwall/gjson
+[gjson_path]: https://github.com/tidwall/gjson#path-syntax
