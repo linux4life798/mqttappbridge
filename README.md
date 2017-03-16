@@ -22,6 +22,21 @@ appear in english names or sentence, isn't used as a wildcard, nor doesn
 it appear in [gjson][gjson]'s path expression description.
 I am open to suggestions about a better separator.
 
+# Usage
+```
+mqttappbridge [options] <source_topic1> <destination_topic1> [<source_topic2> <destination_topic2> [...]]
+
+option:
+  -mqtt_pass string
+    	Sets the MQTT password
+  -mqtt_server string
+    	Sets the MQTT server (default "tcp://localhost:1883")
+  -mqtt_user string
+    	Sets the MQTT username
+  -simple_single
+    	Removes JSON array brackets from single values
+```
+
 # Example Usage
 
 ```
